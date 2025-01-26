@@ -1,0 +1,7 @@
+C:\Users\Philipp\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\ConsoleApp1.exe.config
+C:\Users\Philipp\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\ConsoleApp1.exe
+C:\Users\Philipp\source\repos\ConsoleApp1\ConsoleApp1\bin\Release\ConsoleApp1.pdb
+C:\Users\Philipp\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\ERZRECHNER.csproj.AssemblyReference.cache
+C:\Users\Philipp\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\ERZRECHNER.csproj.CoreCompileInputs.cache
+C:\Users\Philipp\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\ConsoleApp1.exe
+C:\Users\Philipp\source\repos\ConsoleApp1\ConsoleApp1\obj\Release\ConsoleApp1.pdb
