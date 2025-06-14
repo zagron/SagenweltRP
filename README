@@ -1,0 +1,24 @@
+ButtonController 
+
+Duration 
+Gibt in Sekunden an wie lange das GameObject von punkt A zu B braucht
+
+Zposition
+Gibt die Zielposition der Z koordinate an
+Xposition
+Gibt die Zielposition der X koordinate an
+Yposition
+Gibt die Zielposition der Y koordinate an
+
+Buttons
+Wird Gefüllt mit den zu bewegenden Objekten (Überall das ButtonMove Script Hinzufügen)
+Die Reihenfolge der zu drückenden Buttons ist die gleiche wie die des array (erst Element 0, dann Element 1 etc...)
+
+RiddleSolvedObject 
+Das objekt welches Aktiviert wird wenn die Reihenfolge korrekt war
+
+ButtonSound 
+AudioSource die gespielt wird wenn ein Button gedrückt wird 
+
+Riddle Solved Sound
+AudioSource die gespielt wird wenn alle buttons in der richtigen reihenfolge gedrückt wurden 
