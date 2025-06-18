@@ -60,47 +60,29 @@ public class ButtonMove : UdonSharpBehaviour
     }
     public void MoveStep()
     {
-            // Wenn das Objekt noch nicht die Zielposition erreicht hat, bewege es weiter
-            if (timeElapsed < Duration)
-            {
-                timeElapsed += Time.deltaTime; // Zunahme der Zeit
-                float moveFraction = timeElapsed / Duration; // Berechnet den Anteil der Bewegung
-
-                // Bewege das Objekt basierend auf dem Prozentsatz der Gesamtbewegungszeit
-                gameObject.transform.position = Vector3.Lerp(DefaultPosition, MovedPosition, moveFraction);
-
-                // Sendet das nächste MoveStep nach einem Frame
-                SendCustomEventDelayedFrames(nameof(MoveStep), 1);
-            }
-            else
-            {
-                // Am Ziel angekommen, Position exakt setzen und Stoppen
-                gameObject.transform.position = MovedPosition;
-            }
+        var step =  Duration * Time.deltaTime;
+        if (Vector3.Distance(gameObject.transform.position, MovedPosition) > 0.001f)
+        {
+            gameObject.transform.position = Vector3.MoveTowards( gameObject.transform.position,MovedPosition, step);
+            SendCustomEventDelayedFrames(nameof(MoveStep), 1);
+        }
+        else
+        {
+            gameObject.transform.position = MovedPosition;     
+        }
     }
     
-
     public void Reset()
     {
-        isActive = false;
-        if (gameObject.transform.position == MovedPosition)
+        var step =  Duration * Time.deltaTime;
+        if (Vector3.Distance(gameObject.transform.position, DefaultPosition) > 0.001f)
         {
-            if (timeElapsed < Duration)
-            {
-                timeElapsed += Time.deltaTime; // Zunahme der Zeit
-                float moveFraction = timeElapsed / Duration; // Berechnet den Anteil der Bewegung
-
-                // Bewege das Objekt basierend auf dem Prozentsatz der Gesamtbewegungszeit
-                gameObject.transform.position = Vector3.Lerp(MovedPosition,DefaultPosition, moveFraction);
-
-                // Sendet das nächste MoveStep nach einem Frame
-                SendCustomEventDelayedFrames(nameof(Reset), 1);
-            }
-            else
-            {
-                // Am Ziel angekommen, Position exakt setzen und Stoppen
-                gameObject.transform.position = DefaultPosition;     
-            }
+            transform.position = Vector3.MoveTowards( gameObject.transform.position,DefaultPosition, step);
+            SendCustomEventDelayedFrames(nameof(Reset), 1);
+        }
+        else
+        {
+            gameObject.transform.position = DefaultPosition;    
         }
     }
 

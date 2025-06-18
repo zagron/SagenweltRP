@@ -26,7 +26,7 @@ public class TriggerOnPickup : UdonSharpBehaviour
             if (!Networking.IsOwner(gameObject))
                 Networking.SetOwner(Networking.LocalPlayer, gameObject);
             pickupObject.GetComponent<VRC_Pickup>().Drop();
-            pickupObject.transform.position = gameObject.transform.position;
+            pickupObject.SetActive(false);
             pickupObject.GetComponent<VRC_Pickup>().pickupable = false;
             audioSource.Play();
             foreach (GameObject ToggleObject in ToggleObjects)
