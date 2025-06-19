@@ -9,29 +9,28 @@ using VRC.Udon;
 public class FollowPlayer : UdonSharpBehaviour
 {
     [SerializeField] private GameObject[] agents;
-    [SerializeField] private GameObject waypoint;
     void Start()
     {
         
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnPlayerTriggerEnter(VRCPlayerApi player)
     {
-        if (other.gameObject.name.Contains("Fus"))
+        if (player.isLocal)
         {
             foreach (GameObject agent in agents)
             {
-                agent.GetComponent<NavMeshAgent>().destination = other.transform.position;
+                agent.GetComponent<NavMeshAgent>().destination = player.GetPosition();
             }
         }
     }
-    private void OnTriggerExit(Collider other)
+    private void OnPlayerTriggerExit(VRCPlayerApi player)
     {
-        if (other.gameObject.name.Contains("Fus"))
+        if (player.isLocal)
         {
             foreach (GameObject agent in agents)
             {
-                agent.GetComponent<NavMeshAgent>().destination = waypoint.transform.position;
+                agent.GetComponent<AgentPatrol>().SetPatrolPoint();
             }
         }
     }

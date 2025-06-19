@@ -1,7 +1,6 @@
 ﻿
 using System;
 using UdonSharp;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using VRC.SDKBase;
@@ -28,5 +27,10 @@ public class AgentPatrol : UdonSharpBehaviour
             currentPatrolPoint = 0;
             gameObject.GetComponent<NavMeshAgent>().SetDestination(_patrolPoints[currentPatrolPoint].transform.position);
         }
+    }
+
+    public void SetPatrolPoint()
+    {
+        gameObject.GetComponent<NavMeshAgent>().SetDestination(_patrolPoints[currentPatrolPoint].transform.position);
     }
 }

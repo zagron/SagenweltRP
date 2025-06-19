@@ -1,62 +1,58 @@
-﻿
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
 public class PressCorrectButton : UdonSharpBehaviour
 {
-    [SerializeField] private bool IsCorrectButton = false;
-    [SerializeField] private GameObject SolutionObject;
-    [SerializeField] private GameObject MovableRoof;
-    [SerializeField] private float Yposition = 2f;
-    private float MoveDuration = 2f;
-    private float timeElapsed = 0f;
-    private Vector3 MovedPosition;
-    private Vector3 DefaultPosition;
-    private Vector3 UnterschiedPosition;
+    private Vector3 buttonMoveOffset;
+    private Vector3 roofMoveOffset;
+
+   private MoveManager moveManager;
+    private AudioSource correctButtonSound;
+    private AudioSource incorrectButtonSound;
+    private AudioSource roofMoveSound;
+
+    [SerializeField] private bool isCorrectButton = false;
+
+    private Vector3 defaultButtonPosition;
+    private Vector3 movedButtonPosition;
+    private Vector3 defaultRoofPosition;
+    private GameObject Parent;
     void Start()
     {
-        UnterschiedPosition = new Vector3(0, Yposition, 0);
-        DefaultPosition = gameObject.transform.position;
-        MovedPosition = DefaultPosition + UnterschiedPosition;
+        Parent = gameObject.transform.parent.gameObject;
+        moveManager = Parent.GetComponent<MoveManager>();
+        buttonMoveOffset = moveManager.GetButtonMoveOffset();
+        roofMoveOffset = moveManager.GetRoofMoveOffset();
+        
+        defaultButtonPosition = transform.position;
+        movedButtonPosition = defaultButtonPosition + buttonMoveOffset;
     }
 
     public override void Interact()
     {
+        if (moveManager.GetCorrect() == false)
+        {
         if (!Networking.IsOwner(gameObject))
-        Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+
         SendCustomNetworkEvent(VRC.Udon.Common.Interfaces.NetworkEventTarget.All, "OnInteract");
+        }
     }
-    
+
     public void OnInteract()
     {
-        if(IsCorrectButton)
+        if (isCorrectButton)
         {
-        SolutionObject.SetActive(true);
+            moveManager.GetComponent<MoveManager>().IsCorrect();
         }
         else
         {
-            timeElapsed = 0f;
-            DefaultPosition = MovableRoof.transform.position;
-            MovedPosition = DefaultPosition - UnterschiedPosition;
-            MoveStep();
+            moveManager.EnqueueMove(gameObject, defaultButtonPosition);
+            moveManager.GetComponent<MoveManager>().IsIncorrect();
+            moveManager.EnqueueMove(gameObject, movedButtonPosition);
+            moveManager.EnqueueMove(moveManager.GetRoof(), moveManager.GetmovedRoofPosition());
         }
     }
-    
-    public void MoveStep()
-    {
-        var step =  MoveDuration * Time.deltaTime;
-        if (Vector3.Distance(MovableRoof.transform.position, MovedPosition) > 0.001f)
-        {
-            MovableRoof.transform.position = Vector3.MoveTowards( MovableRoof.transform.position,MovedPosition, step);
-            SendCustomEventDelayedFrames(nameof(MoveStep), 1);
-        }
-        else
-        {
-            MovableRoof.transform.position = MovedPosition;     
-        }
-    }
-            
 }

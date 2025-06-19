@@ -16,6 +16,8 @@ public class ButtonMove : UdonSharpBehaviour
     private Vector3 MovedPosition;
     private Vector3 DefaultPosition;
     private Vector3 UnterschiedPosition;
+    [SerializeField]private AudioSource PressSound;
+    [SerializeField]private AudioSource FailSound;
     
     private ButtonController Controller;
     private GameObject Parent;
@@ -51,6 +53,7 @@ public class ButtonMove : UdonSharpBehaviour
         {
             isActive = true;
             Controller.IsButtonCorrect();
+            
         }
     }
 
@@ -68,7 +71,9 @@ public class ButtonMove : UdonSharpBehaviour
         }
         else
         {
-            gameObject.transform.position = MovedPosition;     
+            gameObject.transform.position = MovedPosition;
+            if(PressSound != null)
+                PressSound.Play();
         }
     }
     
@@ -83,6 +88,9 @@ public class ButtonMove : UdonSharpBehaviour
         else
         {
             gameObject.transform.position = DefaultPosition;    
+            isActive = false;
+            if(FailSound != null)
+            FailSound.Play();
         }
     }
 

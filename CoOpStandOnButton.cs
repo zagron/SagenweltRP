@@ -1,9 +1,10 @@
-﻿using UdonSharp;
+﻿
+using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
-public class CoopBodenplatten : UdonSharpBehaviour
+public class CoOpStandOnButton : UdonSharpBehaviour
 {
     VRCPlayerApi player;
     [SerializeField]GameObject OtherButton;
@@ -14,7 +15,7 @@ public class CoopBodenplatten : UdonSharpBehaviour
     [UdonSynced]private bool isPressed;
     [UdonSynced]private bool isDone;
     
-    [SerializeField]private float MoveDuration = 2f;
+    private float MoveDuration = 2f;
     private float timeElapsed = 0f;
     private Vector3 MovedPosition;
     private Vector3 DefaultPosition;
@@ -30,47 +31,38 @@ public class CoopBodenplatten : UdonSharpBehaviour
 
     public override void OnDeserialization()
     {
-        if(isDone)
-        {
-
         foreach (GameObject ToggleObject in ToggleObjects)
         {
             ToggleObject.SetActive(isDone);
-        }
-            
         }
     }
 
     public override void OnPlayerTriggerEnter(VRCPlayerApi player)
     {
-        if (!isPressed && isDone==false)
+        if (!isPressed)
         {
             timeElapsed = 0f;
 
             if (!Networking.IsOwner(gameObject))
                 Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            audioOnStand.Play();
             MoveStep();
             isPressed = true;
-            if (OtherButton.GetComponent<CoopBodenplatten>().CheckPressed())
+            RequestSerialization();
+            if (OtherButton.GetComponent<CoOpStandOnButton>().CheckPressed())
             {
-                OtherButton.GetComponent<CoopBodenplatten>().SetDone();
                 isDone = true;
-                isPressed = false;
                 foreach (GameObject ToggleObject in ToggleObjects)
                 {
-                    ToggleObject.SetActive(!ToggleObject.activeSelf);
-                }
-                    if(audioOnSucess != null)
+                    ToggleObject.SetActive(ToggleObject.activeSelf);
                     audioOnSucess.Play();
+                }
             }
-            RequestSerialization();
         }
     }
 
     public override void OnPlayerTriggerExit(VRCPlayerApi player)
     {
-        if (isPressed && isDone==false)
+        if (isPressed)
         {
             timeElapsed = 0f;
 
@@ -113,10 +105,5 @@ public class CoopBodenplatten : UdonSharpBehaviour
     public bool CheckPressed()
     {
         return isPressed;
-    }
-
-    public bool SetDone()
-    {
-        return isDone=true;
     }
 }

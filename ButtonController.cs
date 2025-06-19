@@ -12,20 +12,22 @@ public class ButtonController : UdonSharpBehaviour
     [SerializeField] public float Xposition = 0f;
     [SerializeField] public float Yposition = 0f;
     [SerializeField] public GameObject[] Buttons;
-    [SerializeField] public GameObject RiddleSolvedObject;
-    [SerializeField] public AudioSource ButtonSound;
+    [SerializeField] public GameObject[] RiddleSolvedObjects;
     [SerializeField] public AudioSource RiddleSolvedSound;
     [UdonSynced]private bool isAn;
     [UdonSynced]private int CurrentButton;
     private float timeElapsed = 0f;
     void Start()
     {
-        RiddleSolvedObject.SetActive(isAn);
     }
 
     public override void OnDeserialization()
     {
-        RiddleSolvedObject.SetActive(isAn);
+        if(isAn)
+            foreach (GameObject RiddleSolvedObject in RiddleSolvedObjects)
+            {
+                RiddleSolvedObject.SetActive(!RiddleSolvedObject.activeSelf);
+            }
     }
 
     public void IsButtonCorrect()
@@ -34,18 +36,22 @@ public class ButtonController : UdonSharpBehaviour
         {
             Buttons[CurrentButton].GetComponent<ButtonMove>().SetTimeElapsed();
             Buttons[CurrentButton].GetComponent<ButtonMove>().MoveStep();
-            ButtonSound.Play();
+            
             CurrentButton++;
         }
         else if(Buttons[CurrentButton].GetComponent<ButtonMove>().GetActive() == false)
         {
             CurrentButton = 0;
+            
             Reset();
         }
         if (CurrentButton == Buttons.Length)
         {
             isAn = true;     
-            RiddleSolvedObject.SetActive(true);
+            foreach (GameObject RiddleSolvedObject in RiddleSolvedObjects)
+            {
+                RiddleSolvedObject.SetActive(!RiddleSolvedObject.activeSelf);
+            }
             RiddleSolvedSound.Play();
         }
         if (!Networking.IsOwner(gameObject))
