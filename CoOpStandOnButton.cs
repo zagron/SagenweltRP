@@ -31,47 +31,50 @@ public class CoOpStandOnButton : UdonSharpBehaviour
 
     public override void OnDeserialization()
     {
-        foreach (GameObject ToggleObject in ToggleObjects)
+        if (isDone)
         {
-            ToggleObject.SetActive(isDone);
+            foreach (GameObject ToggleObject in ToggleObjects)
+            {
+                ToggleObject.SetActive(!ToggleObject.activeSelf);
+            }
         }
     }
 
     public override void OnPlayerTriggerEnter(VRCPlayerApi player)
     {
-        if (!isPressed)
-        {
-            timeElapsed = 0f;
+        if (isDone) return;
+        if (isPressed) return;
+        timeElapsed = 0f;
 
-            if (!Networking.IsOwner(gameObject))
-                Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            MoveStep();
-            isPressed = true;
-            RequestSerialization();
-            if (OtherButton.GetComponent<CoOpStandOnButton>().CheckPressed())
-            {
-                isDone = true;
-                foreach (GameObject ToggleObject in ToggleObjects)
-                {
-                    ToggleObject.SetActive(ToggleObject.activeSelf);
-                    audioOnSucess.Play();
-                }
-            }
+        if (!Networking.IsOwner(gameObject))
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        if(audioOnStand !=null)
+            audioOnStand.Play();
+        MoveStep();
+        isPressed = true;
+        RequestSerialization();
+        if (!OtherButton.GetComponent<CoOpStandOnButton>().CheckPressed()) return;
+        isDone = true;
+        OtherButton.GetComponent<CoOpStandOnButton>().isDoneTrue();
+        foreach (GameObject ToggleObject in ToggleObjects)
+        {
+            ToggleObject.SetActive(!ToggleObject.activeSelf);
         }
+        if(audioOnSucess != null)
+            audioOnSucess.Play();
     }
 
     public override void OnPlayerTriggerExit(VRCPlayerApi player)
     {
-        if (isPressed)
-        {
-            timeElapsed = 0f;
+        if(isDone) return;
+        if (!isPressed) return;
+        timeElapsed = 0f;
 
-            if (!Networking.IsOwner(gameObject))
-                Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            Reset();
-            isPressed = false;
-            RequestSerialization();
-        }
+        if (!Networking.IsOwner(gameObject))
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        Reset();
+        isPressed = false;
+        RequestSerialization();
     }
     
     public void MoveStep()
@@ -84,7 +87,7 @@ public class CoOpStandOnButton : UdonSharpBehaviour
         }
         else
         {
-        gameObject.transform.position = MovedPosition;     
+            gameObject.transform.position = MovedPosition;     
         }
     }
     
@@ -98,12 +101,18 @@ public class CoOpStandOnButton : UdonSharpBehaviour
         }
         else
         {
-        gameObject.transform.position = DefaultPosition;    
+            gameObject.transform.position = DefaultPosition;    
         }
     }
     
     public bool CheckPressed()
     {
         return isPressed;
+    }
+
+    public void isDoneTrue()
+    {
+        isDone = true;
+        RequestSerialization();
     }
 }
