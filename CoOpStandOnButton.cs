@@ -8,7 +8,8 @@ public class CoOpStandOnButton : UdonSharpBehaviour
 {
     VRCPlayerApi player;
     [SerializeField]GameObject OtherButton;
-    [SerializeField]GameObject[] ToggleObjects;
+    [SerializeField]GameObject[] ToggleObjectsOn;
+    [SerializeField]GameObject[] ToggleObjectsOff;
     [SerializeField]AudioSource audioOnSucess;
     [SerializeField]AudioSource audioOnStand;
     [SerializeField] private float Yposition = 2f;
@@ -31,11 +32,16 @@ public class CoOpStandOnButton : UdonSharpBehaviour
 
     public override void OnDeserialization()
     {
+        RequestSerialization();
         if (isDone)
         {
-            foreach (GameObject ToggleObject in ToggleObjects)
+            foreach (GameObject ToggleObject in ToggleObjectsOn)
             {
-                ToggleObject.SetActive(!ToggleObject.activeSelf);
+                ToggleObject.SetActive(true);
+            }
+            foreach (GameObject ToggleObject in ToggleObjectsOff)
+            {
+                ToggleObject.SetActive(false);
             }
         }
     }
@@ -56,10 +62,7 @@ public class CoOpStandOnButton : UdonSharpBehaviour
         if (!OtherButton.GetComponent<CoOpStandOnButton>().CheckPressed()) return;
         isDone = true;
         OtherButton.GetComponent<CoOpStandOnButton>().isDoneTrue();
-        foreach (GameObject ToggleObject in ToggleObjects)
-        {
-            ToggleObject.SetActive(!ToggleObject.activeSelf);
-        }
+        objectToggle();
         if(audioOnSucess != null)
             audioOnSucess.Play();
     }
@@ -76,7 +79,19 @@ public class CoOpStandOnButton : UdonSharpBehaviour
         isPressed = false;
         RequestSerialization();
     }
-    
+
+    public void objectToggle()
+    {
+        foreach (GameObject ToggleObject in ToggleObjectsOn)
+        {
+            ToggleObject.SetActive(true);
+        }
+        foreach (GameObject ToggleObject in ToggleObjectsOff)
+        {
+            ToggleObject.SetActive(false);
+        }
+    }
+
     public void MoveStep()
     {
         var step =  MoveDuration * Time.deltaTime;
