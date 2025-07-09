@@ -8,9 +8,14 @@ using VRC.Udon;
 
 public class AgentPatrol : UdonSharpBehaviour
 {
-    private int currentPatrolPoint = 0;
+    [UdonSynced]private int currentPatrolPoint = 0;
     [SerializeField] private GameObject[] _patrolPoints;
     void Start()
+    {
+        SetPatrolPoint();
+    }
+
+    public override void OnDeserialization()
     {
         gameObject.GetComponent<NavMeshAgent>().SetDestination(_patrolPoints[currentPatrolPoint].transform.position);
     }
@@ -27,6 +32,7 @@ public class AgentPatrol : UdonSharpBehaviour
             currentPatrolPoint = 0;
             gameObject.GetComponent<NavMeshAgent>().SetDestination(_patrolPoints[currentPatrolPoint].transform.position);
         }
+        RequestSerialization();
     }
 
     public void SetPatrolPoint()
